@@ -5,10 +5,10 @@ use regex::Regex;
 pub fn part1(input: &str) -> u32 {
     input
         .lines()
-        .map(|line| line.chars().filter(char::is_ascii_digit))
-        .map(|mut s| {
-            let first = s.next().unwrap();
-            let last = s.next_back().unwrap_or(first);
+        .map(|line| {
+            let mut chars = line.chars().filter(char::is_ascii_digit);
+            let first = chars.next().unwrap();
+            let last = chars.next_back().unwrap_or(first);
             format!("{first}{last}").parse::<u32>().unwrap()
         })
         .sum()
@@ -17,9 +17,7 @@ pub fn part1(input: &str) -> u32 {
 #[aoc(day1, part2)]
 pub fn part2(input: &str) -> u32 {
     static PATTERN: Lazy<Regex> =
-        Lazy::new(|| Regex::new("(one|two|three|four|five|six|seven|eight|nine)").unwrap());
-    static END_PATTERN: Lazy<Regex> =
-        Lazy::new(|| Regex::new("^.*(one|two|three|four|five|six|seven|eight|nine)").unwrap());
+        Lazy::new(|| Regex::new("([0-9]|one|two|three|four|five|six|seven|eight|nine)").unwrap());
 
     fn get_digit(s: &str) -> char {
         match s {
@@ -32,30 +30,28 @@ pub fn part2(input: &str) -> u32 {
             "seven" => '7',
             "eight" => '8',
             "nine" => '9',
-            _ => unreachable!(),
+            _ => s.chars().next().unwrap(),
         }
     }
 
-    fn process_line(s: &str) -> u32 {
-        let first_digit = s.find(|c: char| c.is_ascii_digit());
-        let last_digit = s.rfind(|c: char| c.is_ascii_digit());
-        let first_slice = &s[..first_digit.unwrap_or(s.len())];
-        let last_slice = &s[last_digit.unwrap_or(0)..];
+    input
+        .lines()
+        .map(|s| {
+            let mut captures = PATTERN.captures_iter(s);
 
-        let first_digit = match PATTERN.captures(first_slice) {
-            Some(m) => Some(get_digit(m.get(1).unwrap().as_str())),
-            None => first_digit.map(|i| s.chars().nth(i).unwrap()),
-        }
-        .map_or_else(String::default, |c| c.to_string());
+            let first_digit = captures
+                .next()
+                .and_then(|c| c.get(1))
+                .map(|m| get_digit(m.as_str()))
+                .unwrap();
 
-        let last_digit = match END_PATTERN.captures(last_slice) {
-            Some(m) => Some(get_digit(m.get(1).unwrap().as_str())),
-            None => last_digit.map(|i| s.chars().nth(i).unwrap()),
-        }
-        .map_or_else(String::default, |c| c.to_string());
+            let last_digit = captures
+                .last()
+                .and_then(|c| c.get(1))
+                .map(|m| get_digit(m.as_str()))
+                .unwrap_or(first_digit);
 
-        format!("{first_digit}{last_digit}").parse().unwrap()
-    }
-
-    input.lines().map(process_line).sum()
+            format!("{first_digit}{last_digit}").parse().unwrap()
+        })
+        .sum()
 }
