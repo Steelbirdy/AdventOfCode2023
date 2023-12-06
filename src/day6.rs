@@ -12,30 +12,34 @@ fn total_distance(held_down: Output, total: Output) -> Output {
     (total - held_down) * held_down
 }
 
+fn solve(time: Output, distance: Output) -> Output {
+    let a = time as f32 / 2.;
+    let b = (a * a - distance as f32).sqrt();
+    let lower = (1. + a - b).floor() as Output;
+    let upper = (-1. + a + b).ceil() as Output;
+    upper - lower + 1
+}
+
+regex!(NUM = r"\d+");
+
 #[aoc(day6, part1)]
 pub fn part1((times, distances): &Input) -> Output {
-    regex!(NUM = r"(\d+)");
-
-    let times = NUM.captures_iter(&times);
-    let distances = NUM.captures_iter(&distances);
+    let times = NUM.find_iter(&times);
+    let distances = NUM.find_iter(&distances);
     let races = times.zip(distances);
 
     races
         .map(|(time, distance)| {
-            let time = time.get(1).unwrap().as_str().parse::<Output>().unwrap();
-            let distance = distance.get(1).unwrap().as_str().parse::<Output>().unwrap();
-            (0..time)
-                .filter(|&hold| total_distance(hold, time) > distance)
-                .count() as Output
+            let time = time.as_str().parse().unwrap();
+            let distance = distance.as_str().parse().unwrap();
+            solve(time, distance)
         })
         .product()
 }
 
 #[aoc(day6, part2)]
 pub fn part2((time, distance): &Input) -> Output {
-    let time = time.replace(" ", "").parse::<Output>().unwrap();
-    let distance = distance.replace(" ", "").parse::<Output>().unwrap();
-    (0..time)
-        .filter(|&hold| total_distance(hold, time) > distance)
-        .count() as Output
+    let time = time.replace(' ', "").parse().unwrap();
+    let distance = distance.replace(' ', "").parse().unwrap();
+    solve(time, distance)
 }
