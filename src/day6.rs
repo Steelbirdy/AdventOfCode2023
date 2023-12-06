@@ -8,10 +8,6 @@ pub fn generate(input: &str) -> Input {
     parse!(input, "Time:{}\nDistance:{}")
 }
 
-fn total_distance(held_down: Output, total: Output) -> Output {
-    (total - held_down) * held_down
-}
-
 fn solve(time: Output, distance: Output) -> Output {
     let a = time as f32 / 2.;
     let b = (a * a - distance as f32).sqrt();
