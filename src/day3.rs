@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 type Input = Vec<char>;
-type Output = u64;
 
 #[aoc_generator(day3)]
 pub fn generate(input: &str) -> Vec<Input> {
@@ -17,7 +16,7 @@ fn is_gear_character(ch: &char) -> bool {
 }
 
 #[aoc(day3, part1)]
-pub fn part1(input: &[Input]) -> Output {
+pub fn part1(input: &[Input]) -> u64 {
     let mut ret = 0;
     let mut buf = String::new();
     let width = input[0].len();
@@ -36,7 +35,7 @@ pub fn part1(input: &[Input]) -> Output {
                 end = x;
                 buf.push(digit);
             }
-            let num: Output = buf.parse().unwrap();
+            let num: u64 = buf.parse().unwrap();
             buf.clear();
             let span = start.saturating_sub(1)..=(end + 1).min(width - 1);
             let is_part_number = (y != 0
@@ -55,8 +54,8 @@ pub fn part1(input: &[Input]) -> Output {
 }
 
 #[aoc(day3, part2)]
-pub fn part2(input: &[Input]) -> Output {
-    let mut symbols: HashMap<_, Vec<Output>> = HashMap::new();
+pub fn part2(input: &[Input]) -> u64 {
+    let mut symbols: HashMap<_, Vec<u64>> = HashMap::new();
     let mut buf = String::new();
     let width = input[0].len();
     let height = input.len();
@@ -74,7 +73,7 @@ pub fn part2(input: &[Input]) -> Output {
                 end = x;
                 buf.push(digit);
             }
-            let num: Output = buf.parse().unwrap();
+            let num: u64 = buf.parse().unwrap();
             buf.clear();
             let span = start.saturating_sub(1)..=(end + 1).min(width - 1);
             if y != 0 {

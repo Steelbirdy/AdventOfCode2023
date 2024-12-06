@@ -1,12 +1,10 @@
 use prse::Parse;
 use std::ops::RangeInclusive;
 
-type Output = u64;
-
 #[derive(Parse)]
 #[prse = "seeds: {seeds: :}\n\n{maps:\n\n:}"]
 pub struct Day5Input {
-    seeds: Vec<Output>,
+    seeds: Vec<u64>,
     maps: Vec<Map>,
 }
 
@@ -24,18 +22,18 @@ struct ProcessedMap {
 }
 
 impl ProcessedMap {
-    fn map(&self, x: Output) -> Output {
+    fn map(&self, x: u64) -> u64 {
         self.lines.iter().find_map(|line| line.map(x)).unwrap_or(x)
     }
 
-    fn unmap(&self, y: Output) -> Output {
+    fn unmap(&self, y: u64) -> u64 {
         self.lines
             .iter()
             .find_map(|line| line.unmap(y))
             .unwrap_or(y)
     }
 
-    fn map_range(&self, r: RangeInclusive<Output>) -> Option<RangeInclusive<Output>> {
+    fn map_range(&self, r: RangeInclusive<u64>) -> Option<RangeInclusive<u64>> {
         match self
             .lines
             .iter()
@@ -50,15 +48,15 @@ impl ProcessedMap {
 #[derive(Parse)]
 #[prse = "{dst_start} {src_start} {len}"]
 struct Line {
-    dst_start: Output,
-    src_start: Output,
-    len: Output,
+    dst_start: u64,
+    src_start: u64,
+    len: u64,
 }
 
 #[derive(Debug)]
 struct ProcessedLine {
-    src: RangeInclusive<Output>,
-    dst: RangeInclusive<Output>,
+    src: RangeInclusive<u64>,
+    dst: RangeInclusive<u64>,
 }
 
 impl ProcessedLine {
@@ -69,7 +67,7 @@ impl ProcessedLine {
         }
     }
 
-    fn map(&self, x: Output) -> Option<Output> {
+    fn map(&self, x: u64) -> Option<u64> {
         if !self.src.contains(&x) {
             return None;
         }
@@ -77,7 +75,7 @@ impl ProcessedLine {
         Some(self.dst.clone().nth(index as _).unwrap())
     }
 
-    fn unmap(&self, y: Output) -> Option<Output> {
+    fn unmap(&self, y: u64) -> Option<u64> {
         if !self.dst.contains(&y) {
             return None;
         }
@@ -91,7 +89,7 @@ pub fn generate_part1(input: &str) -> Day5Input {
     Parse::from_str(input).unwrap()
 }
 
-fn generate_input_critical_points(max: Output, map: &ProcessedMap) -> Vec<Output> {
+fn generate_input_critical_points(max: u64, map: &ProcessedMap) -> Vec<u64> {
     let min_found = map.lines.iter().map(|line| line.src.start()).min().unwrap();
     let max_found = map.lines.iter().map(|line| line.src.end()).max().unwrap();
 
@@ -112,7 +110,7 @@ fn generate_input_critical_points(max: Output, map: &ProcessedMap) -> Vec<Output
     ret
 }
 
-fn generate_output_critical_points(max: Output, map: &ProcessedMap) -> Vec<Output> {
+fn generate_output_critical_points(max: u64, map: &ProcessedMap) -> Vec<u64> {
     let min_found = map.lines.iter().map(|line| line.dst.start()).min().unwrap();
     let max_found = map.lines.iter().map(|line| line.dst.end()).max().unwrap();
 
@@ -133,7 +131,7 @@ fn generate_output_critical_points(max: Output, map: &ProcessedMap) -> Vec<Outpu
     ret
 }
 
-fn condense(max: Output, input: &ProcessedMap, output: &ProcessedMap) -> ProcessedMap {
+fn condense(max: u64, input: &ProcessedMap, output: &ProcessedMap) -> ProcessedMap {
     let mut input_cp = generate_input_critical_points(max, input);
     let output_cp = generate_input_critical_points(max, output);
 
@@ -176,7 +174,7 @@ fn condense(max: Output, input: &ProcessedMap, output: &ProcessedMap) -> Process
 }
 
 #[aoc(day5, part1)]
-pub fn part1(input: &Day5Input) -> Output {
+pub fn part1(input: &Day5Input) -> u64 {
     let maps: Vec<ProcessedMap> = input
         .maps
         .iter()
@@ -206,7 +204,7 @@ pub fn part1(input: &Day5Input) -> Output {
 }
 
 #[aoc(day5, part2)]
-pub fn part2(input: &Day5Input) -> Output {
+pub fn part2(input: &Day5Input) -> u64 {
     let maps: Vec<ProcessedMap> = input
         .maps
         .iter()
@@ -230,7 +228,7 @@ pub fn part2(input: &Day5Input) -> Output {
     let critical_points = generate_output_critical_points(max_value, &condensed);
 
     let seed_ranges: Vec<_> = input.seeds.chunks(2).map(|w| w[0]..w[0] + w[1]).collect();
-    let is_seed = |x: Output| {
+    let is_seed = |x: u64| {
         let corresponding_input = condensed.unmap(x);
         seed_ranges
             .iter()

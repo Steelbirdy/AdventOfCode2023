@@ -2,7 +2,6 @@ use prse::Parse;
 use std::collections::HashMap;
 
 type Input = Game;
-type Output = u32;
 
 #[derive(Parse, PartialEq, Debug, Copy, Clone, Eq, Hash)]
 enum Color {
@@ -56,7 +55,7 @@ fn process_game(game: &Game) -> ParsedGame {
 }
 
 #[aoc(day2, part1)]
-pub fn part1(input: &[Input]) -> Output {
+pub fn part1(input: &[Input]) -> u32 {
     let input: Vec<_> = input.iter().map(process_game).collect();
     let mut ret = 0;
     let mut map = HashMap::new();
@@ -79,7 +78,7 @@ pub fn part1(input: &[Input]) -> Output {
 }
 
 #[aoc(day2, part2)]
-pub fn part2(input: &[Input]) -> Output {
+pub fn part2(input: &[Input]) -> u32 {
     let input: Vec<_> = input.iter().map(process_game).collect();
     let mut ret = 0;
     let mut map = HashMap::new();

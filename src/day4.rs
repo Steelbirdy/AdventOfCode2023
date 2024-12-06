@@ -2,7 +2,6 @@ use prse::Parse;
 use std::collections::HashSet;
 
 type Input = ParsedCard;
-type Output = u32;
 
 #[derive(Parse, Debug, Clone)]
 #[prse = "Card {_number}: {winning} | {yours}"]
@@ -38,7 +37,7 @@ pub fn generate(input: &str) -> Vec<Input> {
 }
 
 #[aoc(day4, part1)]
-pub fn part1(input: &[Input]) -> Output {
+pub fn part1(input: &[Input]) -> u64 {
     input
         .iter()
         .map(|card| {
@@ -55,7 +54,7 @@ pub fn part1(input: &[Input]) -> Output {
 }
 
 #[aoc(day4, part2)]
-pub fn part2(input: &[Input]) -> Output {
+pub fn part2(input: &[Input]) -> u64 {
     let winning_numbers: Vec<_> = input
         .iter()
         .map(|card| {
@@ -66,8 +65,8 @@ pub fn part2(input: &[Input]) -> Output {
         })
         .collect();
     let len = winning_numbers.len();
-    let mut card_counts = vec![1 as Output; len];
-    let mut ret: Output = 0;
+    let mut card_counts = vec![1 as u64; len];
+    let mut ret: u64 = 0;
     for (i, n) in winning_numbers.into_iter().enumerate() {
         let count = card_counts[i];
         ret += count;
